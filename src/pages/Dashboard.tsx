@@ -55,10 +55,10 @@ export function Dashboard() {
                 <Tooltip />
                 <Bar dataKey="open" fill="#0f766e" radius={[4, 4, 0, 0]} />
                 <Bar dataKey="done" fill="#f59e0b" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="overdue" fill="#b42318" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
+          <p className="mt-2 text-xs text-[#667085]">Chart bars tally with the table: Open + Done = Assigned. Overdue is shown separately as risk.</p>
           <div className="mt-4 overflow-hidden rounded-lg border border-[#edf1f5]">
             <table className="w-full min-w-[640px] text-left text-sm">
               <thead className="bg-[#f8fafc] text-xs uppercase tracking-[0.08em] text-[#667085]">
