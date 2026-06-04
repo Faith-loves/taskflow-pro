@@ -1,5 +1,5 @@
 import { AlertTriangle, CheckCircle2, FolderKanban, ListTodo, UserCheck } from "lucide-react";
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { useAppStore } from "@/lib/app-store";
 import { StatCard } from "@/components/StatCard";
 import { Badge } from "@/components/ui/Badge";
@@ -53,12 +53,15 @@ export function Dashboard() {
                 <XAxis dataKey="name" />
                 <YAxis allowDecimals={false} />
                 <Tooltip />
-                <Bar dataKey="open" fill="#0f766e" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="done" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+                <Legend />
+                <Bar dataKey="assigned" name="Assigned" fill="#64748b" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="open" name="Open" fill="#0f766e" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="done" name="Done" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="overdue" name="Overdue" fill="#b42318" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
-          <p className="mt-2 text-xs text-[#667085]">Chart bars tally with the table: Open + Done = Assigned. Overdue is shown separately as risk.</p>
+          <p className="mt-2 text-xs text-[#667085]">The chart uses the exact same numbers as the table: Assigned, Open, Done, and Overdue.</p>
           <div className="mt-4 overflow-hidden rounded-lg border border-[#edf1f5]">
             <table className="w-full min-w-[640px] text-left text-sm">
               <thead className="bg-[#f8fafc] text-xs uppercase tracking-[0.08em] text-[#667085]">
