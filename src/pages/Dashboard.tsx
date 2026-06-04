@@ -12,11 +12,20 @@ export function Dashboard() {
   const completed = tasks.filter((task) => doneColumnIds.has(task.columnId)).length;
   const overdue = tasks.filter((task) => new Date(task.dueDate) < new Date() && !doneColumnIds.has(task.columnId)).length;
   const mine = tasks.filter((task) => task.assigneeId === currentUserId).length;
-  const chartData = members.map((member) => ({
-    name: member.name.split(" ")[0],
-    tasks: tasks.filter((task) => task.assigneeId === member.id).length,
-    done: tasks.filter((task) => task.assigneeId === member.id && doneColumnIds.has(task.columnId)).length,
-  }));
+  const teamPerformance = members.map((member) => {
+    const assigned = tasks.filter((task) => task.assigneeId === member.id);
+    const done = assigned.filter((task) => doneColumnIds.has(task.columnId)).length;
+    const late = assigned.filter((task) => new Date(task.dueDate) < new Date() && !doneColumnIds.has(task.columnId)).length;
+    return {
+      id: member.id,
+      name: member.name.split(" ")[0],
+      assigned: assigned.length,
+      open: assigned.length - done,
+      done,
+      overdue: late,
+      progress: Math.round((done / Math.max(assigned.length, 1)) * 100),
+    };
+  });
 
   return (
     <div className="flex flex-col gap-6">
@@ -34,39 +43,54 @@ export function Dashboard() {
       <div className="grid gap-4 xl:grid-cols-[1.4fr_0.8fr]">
         <section className="soft-panel rounded-lg p-5">
           <div className="mb-4">
-            <h2 className="text-lg font-black">Team productivity</h2>
-            <p className="text-sm text-[#667085]">Workload and completed tasks by member.</p>
+            <h2 className="text-lg font-black">Team performance</h2>
+            <p className="text-sm text-[#667085]">Open, completed, overdue, and progress by teammate.</p>
           </div>
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData}>
+              <BarChart data={teamPerformance}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5ebf2" />
                 <XAxis dataKey="name" />
                 <YAxis allowDecimals={false} />
                 <Tooltip />
-                <Bar dataKey="tasks" fill="#0f766e" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="open" fill="#0f766e" radius={[4, 4, 0, 0]} />
                 <Bar dataKey="done" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="overdue" fill="#b42318" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
-          <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            {chartData.map((member) => {
-              const progress = Math.round((member.done / Math.max(member.tasks, 1)) * 100);
-              return (
-                <div key={member.name} className="rounded-md border border-[#edf1f5] p-3">
-                  <div className="mb-2 flex items-center justify-between text-sm">
-                    <span className="font-bold text-[#172033]">{member.name}</span>
-                    <span className="font-bold text-[#0f766e]">{progress}%</span>
-                  </div>
-                  <div className="h-2 rounded-full bg-[#e8eef5]">
-                    <div className="h-2 rounded-full bg-[#0f766e]" style={{ width: `${progress}%` }} />
-                  </div>
-                  <p className="mt-2 text-xs text-[#667085]">
-                    {member.done} completed of {member.tasks} tasks
-                  </p>
-                </div>
-              );
-            })}
+          <div className="mt-4 overflow-hidden rounded-lg border border-[#edf1f5]">
+            <table className="w-full min-w-[640px] text-left text-sm">
+              <thead className="bg-[#f8fafc] text-xs uppercase tracking-[0.08em] text-[#667085]">
+                <tr>
+                  <th className="px-3 py-2">Member</th>
+                  <th className="px-3 py-2">Assigned</th>
+                  <th className="px-3 py-2">Open</th>
+                  <th className="px-3 py-2">Done</th>
+                  <th className="px-3 py-2">Overdue</th>
+                  <th className="px-3 py-2">Progress</th>
+                </tr>
+              </thead>
+              <tbody>
+                {teamPerformance.map((member) => (
+                  <tr key={member.id} className="border-t border-[#edf1f5]">
+                    <td className="px-3 py-3 font-bold text-[#172033]">{member.name}</td>
+                    <td className="px-3 py-3">{member.assigned}</td>
+                    <td className="px-3 py-3">{member.open}</td>
+                    <td className="px-3 py-3">{member.done}</td>
+                    <td className="px-3 py-3 text-[#b42318]">{member.overdue}</td>
+                    <td className="px-3 py-3">
+                      <div className="flex items-center gap-2">
+                        <div className="h-2 w-24 rounded-full bg-[#e8eef5]">
+                          <div className="h-2 rounded-full bg-[#0f766e]" style={{ width: `${member.progress}%` }} />
+                        </div>
+                        <span className="font-bold text-[#0f766e]">{member.progress}%</span>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </section>
         <section className="soft-panel rounded-lg p-5">

@@ -11,7 +11,7 @@ type ChatMessage = {
 };
 
 export function FloatingAiRobot() {
-  const { activeProject, tasks, members, generateAiTasks } = useAppStore();
+  const { activeProject, projects, tasks, members, columns, generateAiTasks } = useAppStore();
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -21,7 +21,6 @@ export function FloatingAiRobot() {
       body: "Hi, I can chat normally, but I will keep things useful for this project. Ask me about progress, deadlines, meetings, priorities, or any idea you want to turn into tasks.",
     },
   ]);
-  const projectTasks = tasks.filter((task) => task.projectId === activeProject.id);
 
   async function sendMessage(event: React.FormEvent) {
     event.preventDefault();
@@ -31,9 +30,9 @@ export function FloatingAiRobot() {
     setChat((current) => [...current, { role: "user", body: userMessage }]);
     setLoading(true);
     try {
-      const answer = await askTaskFlowAssistant(userMessage, { project: activeProject, tasks: projectTasks, members });
+      const answer = await askTaskFlowAssistant(userMessage, { currentProject: activeProject, projects, tasks, members, columns });
       setChat((current) => [...current, { role: "assistant", body: answer }]);
-      if (/generate|break|create|plan|tasks/i.test(userMessage)) {
+      if (/(generate|break down|create|plan|suggest).*(task|tasks)|idea/i.test(userMessage)) {
         generateAiTasks(userMessage.replace(/generate|break|create|plan|tasks|for/gi, "").trim() || userMessage);
       }
     } catch (error) {
