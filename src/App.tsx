@@ -23,7 +23,7 @@ const queryClient = new QueryClient();
 function Page({ activePage, setActivePage }: { activePage: string; setActivePage: (page: string) => void }) {
   if (activePage === "dashboard") return <Dashboard />;
   if (activePage === "workspace") return <Workspace />;
-  if (activePage === "projects") return <Projects />;
+  if (activePage === "projects") return <Projects setActivePage={setActivePage} />;
   if (activePage === "board") return <KanbanBoard setActivePage={setActivePage} />;
   if (activePage === "calendar") return <Calendar />;
   if (activePage === "notifications") return <Notifications />;

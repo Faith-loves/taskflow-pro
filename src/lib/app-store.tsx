@@ -7,6 +7,7 @@ type AppStore = AppState & {
   activeProject: Project;
   activeTask?: Task;
   activeTaskId?: string;
+  setActiveProjectId: (id: string) => void;
   search: string;
   setSearch: (value: string) => void;
   priorityFilter: Priority | "All";
@@ -516,23 +517,39 @@ export function AppProvider({ children, userId, userEmail }: { children: ReactNo
       if (result.error) throw result.error;
     }
 
-    const members: Member[] = [
-      ...(membersResult.data ?? []).map((row: any) => ({
+    const profileMembers: Member[] = (membersResult.data ?? []).map((row: any) => ({
         id: row.profiles.id,
         name: row.profiles.full_name,
         email: row.profiles.email,
         role: row.role,
         avatarUrl: row.profiles.avatar_url,
         title: row.profiles.title ?? "Team member",
-      })),
-      ...(invitationsResult.data ?? []).map((row: any) => ({
+      }));
+    const existingEmails = new Set(profileMembers.map((member) => member.email.toLowerCase()));
+    const invitationMembers = new Map<string, Member>();
+    for (const row of invitationsResult.data ?? []) {
+      const email = row.email.toLowerCase();
+      if (existingEmails.has(email) || invitationMembers.has(email)) continue;
+      const displayName =
+        email === "sarah.design@example.com"
+          ? "Sarah Kim"
+          : email === "jamal.engineering@example.com"
+            ? "Jamal Reed"
+            : email === "olivia.client@example.com"
+              ? "Olivia Chen"
+              : row.email
+                  .split("@")[0]
+                  .replace(/[._-]/g, " ")
+                  .replace(/\b\w/g, (letter: string) => letter.toUpperCase());
+      invitationMembers.set(email, {
         id: `invite-${row.id}`,
-        name: row.email.split("@")[0].replace(/[._-]/g, " "),
+        name: displayName,
         email: row.email,
         role: row.role,
         title: "Invited teammate",
-      })),
-    ];
+      });
+    }
+    const members: Member[] = [...profileMembers, ...invitationMembers.values()];
     const invitedMemberByEmail = new Map(members.filter((member) => member.id.startsWith("invite-")).map((member) => [member.email, member.id]));
     const visibleAssignees = new Map<string, string | undefined>([
       ["Design onboarding screen", invitedMemberByEmail.get("sarah.design@example.com")],
@@ -614,6 +631,7 @@ export function AppProvider({ children, userId, userEmail }: { children: ReactNo
     activeProject,
     activeTask,
     activeTaskId,
+    setActiveProjectId,
     search,
     setSearch,
     priorityFilter,

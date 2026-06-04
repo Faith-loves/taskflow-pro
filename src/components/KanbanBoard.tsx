@@ -105,8 +105,10 @@ const boardTabs = [
 export function KanbanBoard({ setActivePage }: { setActivePage: (page: string) => void }) {
   const {
     columns,
+    projects,
     tasks,
     activeProject,
+    setActiveProjectId,
     moveTask,
     createColumn,
     createTask,
@@ -194,6 +196,21 @@ export function KanbanBoard({ setActivePage }: { setActivePage: (page: string) =
             <p className="text-sm text-[#667085]">{activeProject.description || "Plan, assign, review, and ship work from one board."}</p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
+            <select
+              value={activeProject.id}
+              onChange={(event) => {
+                setActiveProjectId(event.target.value);
+                setProjectView("Board");
+              }}
+              className="h-10 min-w-[230px] rounded-md border border-[#d7dee8] bg-white px-3 text-sm font-semibold text-[#172033]"
+              aria-label="Select project board"
+            >
+              {projects.map((project) => (
+                <option key={project.id} value={project.id}>
+                  {project.title} - {project.status}
+                </option>
+              ))}
+            </select>
             <Button variant="outline" type="button" onClick={shareBoard}>
               Share
             </Button>

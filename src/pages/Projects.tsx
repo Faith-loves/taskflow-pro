@@ -1,13 +1,13 @@
 import { useState } from "react";
-import { Archive, Plus, Trash2 } from "lucide-react";
+import { Archive, KanbanSquare, Plus, Trash2 } from "lucide-react";
 import { useAppStore } from "@/lib/app-store";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { TextField } from "@/components/ui/TextField";
 import { formatShortDate } from "@/lib/utils";
 
-export function Projects() {
-  const { projects, members, createProject, archiveProject, deleteProject } = useAppStore();
+export function Projects({ setActivePage }: { setActivePage: (page: string) => void }) {
+  const { projects, members, createProject, archiveProject, deleteProject, setActiveProjectId } = useAppStore();
   const [title, setTitle] = useState("");
   return (
     <div className="flex flex-col gap-6">
@@ -52,6 +52,17 @@ export function Projects() {
                 <td className="px-4 py-4 text-sm">{project.memberIds.map((id) => members.find((member) => member.id === id)?.name.split(" ")[0]).join(", ")}</td>
                 <td className="px-4 py-4">
                   <div className="flex flex-wrap gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setActiveProjectId(project.id);
+                        setActivePage("board");
+                      }}
+                    >
+                      <KanbanSquare className="size-4" />
+                      Open board
+                    </Button>
                     <Button variant="outline" size="sm" onClick={() => archiveProject(project.id)} disabled={project.status === "Archived"}>
                       <Archive className="size-4" />
                       {project.status === "Archived" ? "Archived" : "Archive"}
