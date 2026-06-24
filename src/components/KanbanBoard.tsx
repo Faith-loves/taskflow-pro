@@ -40,7 +40,7 @@ function BoardColumn({ column }: { column: Column }) {
   }
 
   return (
-    <section ref={setNodeRef} className="flex h-[min(34rem,calc(100vh-210px))] min-w-[min(300px,calc(100vw-1.5rem))] flex-col rounded-lg border border-[#dfe5ee] bg-[#f8fafc]/90 shadow-sm backdrop-blur sm:h-[calc(100vh-210px)] sm:min-w-[300px]">
+    <section ref={setNodeRef} className="flex h-[min(34rem,calc(100vh-210px))] min-w-[min(300px,calc(100vw-2rem))] flex-col rounded-lg border border-[#dfe5ee] bg-[#f8fafc]/90 shadow-sm backdrop-blur sm:h-[calc(100vh-210px)] sm:min-w-[300px]">
       <div className="flex items-center justify-between border-b border-[#e5ebf2] px-3 py-3">
         {isRenaming ? (
           <TextField
@@ -280,7 +280,7 @@ export function KanbanBoard({ setActivePage }: { setActivePage: (page: string) =
             </div>
           </div>
           <DndContext sensors={sensors} onDragEnd={onDragEnd}>
-            <div className="scrollbar-thin -mx-3 flex snap-x gap-3 overflow-x-auto px-3 pb-3 sm:mx-0 sm:gap-4 sm:px-0">
+            <div className="scrollbar-thin flex max-w-full snap-x gap-3 overflow-x-auto pb-3 sm:gap-4">
               {boardColumns.map((column) => (
                 <BoardColumn key={column.id} column={column} />
               ))}
