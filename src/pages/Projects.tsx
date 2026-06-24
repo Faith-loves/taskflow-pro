@@ -29,8 +29,52 @@ export function Projects({ setActivePage }: { setActivePage: (page: string) => v
           <Button className="w-full sm:w-auto" type="submit"><Plus className="size-4" />Project</Button>
         </form>
       </div>
-      <div className="soft-panel overflow-x-auto rounded-lg">
-        <table className="w-full min-w-[760px] border-collapse text-left">
+      <div className="soft-panel overflow-hidden rounded-lg md:overflow-x-auto">
+        <div className="grid gap-3 p-3 md:hidden">
+          {projects.map((project) => (
+            <article key={project.id} className="rounded-lg border border-[#edf1f5] bg-white p-4">
+              <div className="mb-3 flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <h2 className="break-words font-black">{project.title}</h2>
+                  <p className="mt-1 text-sm leading-6 text-[#667085]">{project.description}</p>
+                </div>
+                <Badge tone={project.status === "Active" ? "green" : "gray"}>{project.status}</Badge>
+              </div>
+              <dl className="grid gap-2 text-sm text-[#667085]">
+                <div>
+                  <dt className="font-bold text-[#172033]">Timeline</dt>
+                  <dd>{formatShortDate(project.startDate)} - {formatShortDate(project.dueDate)}</dd>
+                </div>
+                <div>
+                  <dt className="font-bold text-[#172033]">Team</dt>
+                  <dd>{project.memberIds.map((id) => members.find((member) => member.id === id)?.name.split(" ")[0]).join(", ")}</dd>
+                </div>
+              </dl>
+              <div className="mt-4 grid gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setActiveProjectId(project.id);
+                    setActivePage("board");
+                  }}
+                >
+                  <KanbanSquare className="size-4" />
+                  Open board
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => archiveProject(project.id)} disabled={project.status === "Archived"}>
+                  <Archive className="size-4" />
+                  {project.status === "Archived" ? "Archived" : "Archive"}
+                </Button>
+                <Button variant="danger" size="sm" onClick={() => deleteProject(project.id)}>
+                  <Trash2 className="size-4" />
+                  Delete
+                </Button>
+              </div>
+            </article>
+          ))}
+        </div>
+        <table className="hidden w-full min-w-[760px] border-collapse text-left md:table">
           <thead className="bg-[#f8fafc] text-xs uppercase tracking-[0.08em] text-[#667085]">
             <tr>
               <th className="px-4 py-3">Project</th>

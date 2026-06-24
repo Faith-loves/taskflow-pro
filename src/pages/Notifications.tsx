@@ -9,12 +9,12 @@ export function Notifications() {
   const unread = notifications.filter((notification) => !notification.read).length;
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex flex-col items-stretch justify-between gap-3 sm:flex-row sm:items-center">
         <div>
-          <h1 className="text-3xl font-black tracking-normal">Notifications</h1>
+          <h1 className="text-2xl font-black tracking-normal sm:text-3xl">Notifications</h1>
           <p className="text-sm text-[#667085]">Assignments, comments, mentions, due dates, and project changes.</p>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
           <Button variant="outline" onClick={markNotificationsRead} disabled={unread === 0}><CheckCheck className="size-4" />Mark read</Button>
           <Button variant="danger" onClick={clearNotifications} disabled={notifications.length === 0}><Trash2 className="size-4" />Clear all</Button>
         </div>
@@ -28,14 +28,14 @@ export function Notifications() {
           </div>
         ) : null}
         {notifications.map((notification) => (
-          <article key={notification.id} className="flex gap-3 border-b border-[#edf1f5] p-4 last:border-b-0">
-            <div className="flex size-10 items-center justify-center rounded-lg bg-[#e8f7f4] text-[#0f766e]"><BellRing className="size-5" /></div>
-            <div className="flex-1">
-              <div className="flex items-center gap-2">
+          <article key={notification.id} className="flex gap-3 border-b border-[#edf1f5] p-3 last:border-b-0 sm:p-4">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-[#e8f7f4] text-[#0f766e]"><BellRing className="size-5" /></div>
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-2">
                 <h2 className="font-black">{notification.title}</h2>
                 {!notification.read ? <Badge tone="red">New</Badge> : null}
               </div>
-              <p className="text-sm text-[#667085]">{notification.body}</p>
+              <p className="break-words text-sm text-[#667085]">{notification.body}</p>
               <p className="mt-1 text-xs text-[#8a96a8]">{formatShortDate(notification.createdAt)}</p>
             </div>
             <Button variant="ghost" size="icon" onClick={() => deleteNotification(notification.id)} aria-label={`Delete ${notification.title}`}>

@@ -290,8 +290,33 @@ export function KanbanBoard({ setActivePage }: { setActivePage: (page: string) =
       ) : null}
 
       {projectView === "List" ? (
-        <section className="soft-panel overflow-x-auto rounded-lg">
-          <table className="w-full min-w-[860px] border-collapse text-left">
+        <section className="soft-panel overflow-hidden rounded-lg md:overflow-x-auto">
+          <div className="grid gap-3 p-3 md:hidden">
+            {projectTasks.map((task) => {
+              const assignee = members.find((member) => member.id === task.assigneeId) ?? members[0];
+              return (
+                <article key={task.id} className="rounded-lg border border-[#edf1f5] bg-white p-4">
+                  <div className="mb-3 flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <h3 className="break-words font-black">{task.title}</h3>
+                      <p className="mt-1 line-clamp-2 text-sm leading-6 text-[#667085]">{task.description}</p>
+                    </div>
+                    <Badge tone={task.priority === "Urgent" ? "red" : task.priority === "High" ? "amber" : "default"}>{task.priority}</Badge>
+                  </div>
+                  <div className="mb-3 flex flex-wrap gap-2 text-sm">
+                    <Badge>{columnTitleById.get(task.columnId) ?? "Unknown"}</Badge>
+                    <span className="inline-flex items-center gap-2 font-semibold text-[#4e5c72]"><Avatar member={assignee} className="size-7" />{assignee.name}</span>
+                    <span className="font-semibold text-[#667085]">Due {formatShortDate(task.dueDate)}</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <Button variant="outline" size="sm" onClick={() => setActiveTaskId(task.id)}>Open</Button>
+                    <Button variant="danger" size="sm" onClick={() => deleteTask(task.id)}><Trash2 className="size-4" />Delete</Button>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+          <table className="hidden w-full min-w-[860px] border-collapse text-left md:table">
             <thead className="bg-[#f8fafc] text-xs uppercase tracking-[0.08em] text-[#667085]">
               <tr>
                 <th className="px-4 py-3">Task</th>

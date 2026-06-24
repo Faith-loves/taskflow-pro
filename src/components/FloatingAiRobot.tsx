@@ -43,9 +43,9 @@ export function FloatingAiRobot() {
   }
 
   return (
-    <div className="fixed bottom-6 right-6 z-30">
+    <div className="fixed bottom-4 right-4 z-30 sm:bottom-6 sm:right-6">
       {open ? (
-        <section className="glass-panel mb-4 flex h-[480px] w-[360px] max-w-[calc(100vw-32px)] flex-col overflow-hidden rounded-2xl">
+        <section className="glass-panel mb-3 flex h-[min(480px,calc(100vh-7rem))] w-[calc(100vw-2rem)] max-w-[360px] flex-col overflow-hidden rounded-xl sm:mb-4 sm:rounded-2xl">
           <header className="flex items-center justify-between border-b border-white/10 bg-gradient-to-r from-[#172033] via-[#123c3a] to-[#0f766e] px-4 py-3 text-white">
             <div className="flex items-center gap-3">
               <span className="relative flex size-10 items-center justify-center rounded-xl bg-white/14 shadow-inner">
@@ -96,13 +96,13 @@ export function FloatingAiRobot() {
         </section>
       ) : null}
       <button
-        className="robot-float robot-glow relative flex size-20 items-center justify-center rounded-[1.35rem] border border-[#b7e3dc] bg-gradient-to-br from-[#10b3a5] via-[#0f766e] to-[#16423f] text-white transition hover:-translate-y-1"
+        className="robot-float robot-glow relative flex size-16 items-center justify-center rounded-[1.1rem] border border-[#b7e3dc] bg-gradient-to-br from-[#10b3a5] via-[#0f766e] to-[#16423f] text-white transition hover:-translate-y-1 sm:size-20 sm:rounded-[1.35rem]"
         onClick={() => setOpen((current) => !current)}
         aria-label="Open TaskFlow AI assistant"
       >
         <span className="absolute -top-3 left-1/2 h-4 w-0.5 -translate-x-1/2 rounded-full bg-[#d9fffb]" />
         <span className="absolute -top-5 left-1/2 size-3 -translate-x-1/2 rounded-full bg-[#f59e0b] shadow-[0_0_18px_rgba(245,158,11,0.95)]" />
-        <span className="relative flex size-12 items-center justify-center rounded-2xl bg-[#d9fffb] shadow-inner">
+        <span className="relative flex size-10 items-center justify-center rounded-xl bg-[#d9fffb] shadow-inner sm:size-12 sm:rounded-2xl">
           <span className="absolute left-3 top-4 size-1.5 rounded-full bg-[#172033]" />
           <span className="absolute right-3 top-4 size-1.5 rounded-full bg-[#172033]" />
           <span className="absolute bottom-3 h-2 w-5 rounded-b-full border-b-[3px] border-[#172033]" />

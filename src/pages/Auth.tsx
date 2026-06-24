@@ -60,32 +60,32 @@ export function AuthPage({ onAuthenticated }: { onAuthenticated: () => void }) {
   }
 
   return (
-    <main className="min-h-screen bg-[#f6f8fb] p-4">
-      <div className="mx-auto grid min-h-[calc(100vh-32px)] max-w-6xl overflow-hidden rounded-xl border border-[#dfe5ee] bg-white lg:grid-cols-[0.95fr_1.05fr]">
-        <section className="flex flex-col justify-between bg-[#172033] p-8 text-white">
+    <main className="min-h-screen bg-[#f6f8fb] p-3 sm:p-4">
+      <div className="mx-auto grid min-h-[calc(100vh-24px)] max-w-6xl overflow-hidden rounded-xl border border-[#dfe5ee] bg-white sm:min-h-[calc(100vh-32px)] lg:grid-cols-[0.95fr_1.05fr]">
+        <section className="flex flex-col justify-between gap-8 bg-[#172033] p-5 text-white sm:p-8">
           <div>
-            <div className="mb-10 flex items-center gap-3">
+            <div className="mb-6 flex items-center gap-3 sm:mb-10">
               <div className="flex size-11 items-center justify-center rounded-lg bg-[#0f766e] text-sm font-black">TF</div>
               <div>
                 <h1 className="text-xl font-black">TaskFlow Pro</h1>
                 <p className="text-sm text-white/65">Full-stack project management SaaS</p>
               </div>
             </div>
-            <h2 className="max-w-lg text-4xl font-black leading-tight tracking-normal">Manage projects, tasks, deadlines, teams, and productivity in one real workspace.</h2>
+            <h2 className="max-w-lg text-2xl font-black leading-tight tracking-normal sm:text-4xl">Manage projects, tasks, deadlines, teams, and productivity in one real workspace.</h2>
             <p className="mt-4 max-w-md text-sm leading-6 text-white/70">
               Built for portfolio review with real auth wiring, role-based permissions, Kanban drag-and-drop, comments, files, activity logs, analytics, and Supabase-ready persistence.
             </p>
           </div>
           <div className="grid gap-3 text-sm text-white/75">
             {["Supabase Auth and Storage", "Workspace roles and invitations", "Realtime-ready Kanban collaboration"].map((item) => (
-              <p key={item} className="flex items-center gap-2"><CheckCircle2 className="size-4 text-[#4fd1c5]" />{item}</p>
+              <p key={item} className="flex items-center gap-2"><CheckCircle2 className="mt-0.5 size-4 shrink-0 text-[#4fd1c5]" />{item}</p>
             ))}
           </div>
         </section>
-        <section className="flex items-center justify-center p-6">
+        <section className="flex items-center justify-center p-4 sm:p-6">
           <div className="w-full max-w-md">
             <div className="mb-6">
-              <h2 className="text-3xl font-black tracking-normal">
+              <h2 className="text-2xl font-black tracking-normal sm:text-3xl">
                 {mode === "signup" ? "Create account" : mode === "reset" ? "Reset password" : "Welcome back"}
               </h2>
               <p className="mt-2 text-sm text-[#667085]">
@@ -116,7 +116,7 @@ export function AuthPage({ onAuthenticated }: { onAuthenticated: () => void }) {
                 {mode === "signup" ? "Sign up" : mode === "reset" ? "Send reset email" : mode === "verify" ? "Resend verification email" : "Login"}
               </Button>
             </form>
-            <div className="mt-5 flex flex-wrap gap-2">
+            <div className="mt-5 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
               {[
                 ["login", "Login"],
                 ["signup", "Sign up"],

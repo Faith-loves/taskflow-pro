@@ -62,8 +62,27 @@ export function Dashboard() {
             </ResponsiveContainer>
           </div>
           <p className="mt-2 text-xs text-[#667085]">The chart uses the exact same numbers as the table: Assigned, Open, Done, and Overdue.</p>
-          <div className="mt-4 overflow-x-auto rounded-lg border border-[#edf1f5]">
-            <table className="w-full min-w-[640px] text-left text-sm">
+          <div className="mt-4 overflow-hidden rounded-lg border border-[#edf1f5] md:overflow-x-auto">
+            <div className="grid gap-3 p-3 md:hidden">
+              {teamPerformance.map((member) => (
+                <article key={member.id} className="rounded-lg border border-[#edf1f5] bg-white p-3">
+                  <div className="mb-3 flex items-center justify-between gap-3">
+                    <h3 className="font-black text-[#172033]">{member.name}</h3>
+                    <span className="font-bold text-[#0f766e]">{member.progress}%</span>
+                  </div>
+                  <div className="mb-3 h-2 rounded-full bg-[#e8eef5]">
+                    <div className="h-2 rounded-full bg-[#0f766e]" style={{ width: `${member.progress}%` }} />
+                  </div>
+                  <dl className="grid grid-cols-2 gap-2 text-sm text-[#667085]">
+                    <div><dt className="font-bold text-[#172033]">Assigned</dt><dd>{member.assigned}</dd></div>
+                    <div><dt className="font-bold text-[#172033]">Open</dt><dd>{member.open}</dd></div>
+                    <div><dt className="font-bold text-[#172033]">Done</dt><dd>{member.done}</dd></div>
+                    <div><dt className="font-bold text-[#172033]">Overdue</dt><dd className="text-[#b42318]">{member.overdue}</dd></div>
+                  </dl>
+                </article>
+              ))}
+            </div>
+            <table className="hidden w-full min-w-[640px] text-left text-sm md:table">
               <thead className="bg-[#f8fafc] text-xs uppercase tracking-[0.08em] text-[#667085]">
                 <tr>
                   <th className="px-3 py-2">Member</th>

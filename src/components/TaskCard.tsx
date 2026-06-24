@@ -30,8 +30,8 @@ export function TaskCard({ task }: { task: Task }) {
       {...attributes}
       {...listeners}
     >
-      <div className="mb-3 flex items-start justify-between gap-3">
-        <p className="text-sm font-bold leading-5 text-[#172033]">{task.title}</p>
+      <div className="mb-3 flex items-start justify-between gap-2">
+        <p className="min-w-0 break-words text-sm font-bold leading-5 text-[#172033]">{task.title}</p>
         <div className="flex items-center gap-1">
           <Badge tone={priorityTone[task.priority]}>{task.priority}</Badge>
           <button
@@ -56,12 +56,12 @@ export function TaskCard({ task }: { task: Task }) {
           </Badge>
         ))}
       </div>
-      <div className="flex items-center justify-between text-xs text-[#667085]">
-        <div className="flex items-center gap-2">
+      <div className="flex flex-col gap-2 text-xs text-[#667085] sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-wrap items-center gap-2">
           <Avatar member={assignee} className="size-7" />
-          <span>{assignee.name.split(" ")[0]}</span>
+          <span className="truncate">{assignee.name.split(" ")[0]}</span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <span className="inline-flex items-center gap-1">
             <CalendarDays className="size-3.5" />
             {formatShortDate(task.dueDate)}

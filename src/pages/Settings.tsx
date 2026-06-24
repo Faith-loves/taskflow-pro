@@ -10,7 +10,7 @@ export function Settings() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-3xl font-black tracking-normal">Settings</h1>
+        <h1 className="text-2xl font-black tracking-normal sm:text-3xl">Settings</h1>
         <p className="text-sm text-[#667085]">Profile, workspace, storage, security, and admin controls.</p>
       </div>
       <section className="soft-panel rounded-lg p-5">
@@ -32,9 +32,9 @@ export function Settings() {
             />
           </label>
         </div>
-        <div className="mt-4 flex gap-2">
-          <Button onClick={() => updateWorkspaceName(name)}>Save changes</Button>
-          <Button variant="danger" onClick={deleteWorkspace}>Delete workspace</Button>
+        <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+          <Button className="w-full sm:w-auto" onClick={() => updateWorkspaceName(name)}>Save changes</Button>
+          <Button className="w-full sm:w-auto" variant="danger" onClick={deleteWorkspace}>Delete workspace</Button>
         </div>
       </section>
       <section className="soft-panel rounded-lg p-5">
@@ -52,7 +52,7 @@ export function Settings() {
               if (file) uploadProfilePicture(file);
             }}
           />
-          <span className="inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-md border border-[#d7dee8] bg-white px-4 text-sm font-semibold text-[#172033] transition hover:bg-[#f6f8fb]">
+          <span className="inline-flex min-h-10 w-full cursor-pointer items-center justify-center gap-2 rounded-md border border-[#d7dee8] bg-white px-4 py-2 text-center text-sm font-semibold text-[#172033] transition hover:bg-[#f6f8fb] sm:w-auto">
             <Upload className="size-4" />
             Upload profile picture
           </span>

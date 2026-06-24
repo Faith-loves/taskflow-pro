@@ -16,13 +16,13 @@ export function Analytics() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-3xl font-black tracking-normal">Analytics</h1>
+        <h1 className="text-2xl font-black tracking-normal sm:text-3xl">Analytics</h1>
         <p className="text-sm text-[#667085]">Progress, workload, overdue risk, and member activity.</p>
       </div>
       <div className="grid gap-4 lg:grid-cols-[1fr_0.75fr]">
-        <section className="rounded-lg border border-[#dfe5ee] bg-white p-5">
+        <section className="overflow-hidden rounded-lg border border-[#dfe5ee] bg-white p-4 sm:p-5">
           <h2 className="mb-4 text-lg font-black">Completed tasks per week</h2>
-          <div className="h-80">
+          <div className="h-64 sm:h-80">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={weekly}>
                 <CartesianGrid stroke="#e5ebf2" strokeDasharray="3 3" />
@@ -35,19 +35,19 @@ export function Analytics() {
             </ResponsiveContainer>
           </div>
         </section>
-        <section className="rounded-lg border border-[#dfe5ee] bg-white p-5">
+        <section className="overflow-hidden rounded-lg border border-[#dfe5ee] bg-white p-4 sm:p-5">
           <h2 className="mb-4 text-lg font-black">Team workload</h2>
-          <div className="h-64">
+          <div className="h-56 sm:h-64">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
-                <Pie data={workload} dataKey="value" nameKey="name" outerRadius={92} label>
+                <Pie data={workload} dataKey="value" nameKey="name" outerRadius={72} label>
                   {workload.map((_, index) => <Cell key={index} fill={["#0f766e", "#f59e0b", "#2563eb", "#6b7280"][index % 4]} />)}
                 </Pie>
                 <Tooltip />
               </PieChart>
             </ResponsiveContainer>
           </div>
-          <p className="text-center text-4xl font-black text-[#0f766e]">{progress}%</p>
+          <p className="text-center text-3xl font-black text-[#0f766e] sm:text-4xl">{progress}%</p>
           <p className="text-center text-sm text-[#667085]">Project progress</p>
         </section>
       </div>

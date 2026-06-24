@@ -16,7 +16,7 @@ export function Calendar() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-3xl font-black tracking-normal">Calendar</h1>
+        <h1 className="text-2xl font-black tracking-normal sm:text-3xl">Calendar</h1>
         <p className="text-sm text-[#667085]">Tasks grouped by due date and deadline risk.</p>
       </div>
       <div className="grid gap-4 lg:grid-cols-4">
@@ -26,11 +26,11 @@ export function Calendar() {
             <div className="flex flex-col gap-3">
               {group.tasks.map((task) => (
                 <article key={task.id} className="rounded-md border border-[#edf1f5] p-3">
-                  <div className="mb-2 flex items-center justify-between gap-2">
-                    <p className="text-sm font-bold">{task.title}</p>
+                  <div className="mb-2 flex items-start justify-between gap-2">
+                    <p className="min-w-0 text-sm font-bold">{task.title}</p>
                     <Badge tone={task.priority === "Urgent" ? "red" : task.priority === "High" ? "amber" : "default"}>{task.priority}</Badge>
                   </div>
-                  <p className="text-xs text-[#667085]">{formatShortDate(task.dueDate)} · {members.find((member) => member.id === task.assigneeId)?.name}</p>
+                  <p className="break-words text-xs text-[#667085]">{formatShortDate(task.dueDate)} · {members.find((member) => member.id === task.assigneeId)?.name}</p>
                 </article>
               ))}
               {group.tasks.length === 0 ? <p className="text-sm text-[#667085]">No tasks.</p> : null}
