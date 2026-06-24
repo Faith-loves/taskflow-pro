@@ -40,7 +40,7 @@ function BoardColumn({ column }: { column: Column }) {
   }
 
   return (
-    <section ref={setNodeRef} className="flex h-[calc(100vh-210px)] min-w-[300px] flex-col rounded-lg border border-[#dfe5ee] bg-[#f8fafc]/90 shadow-sm backdrop-blur">
+    <section ref={setNodeRef} className="flex h-[min(34rem,calc(100vh-210px))] min-w-[min(300px,calc(100vw-1.5rem))] flex-col rounded-lg border border-[#dfe5ee] bg-[#f8fafc]/90 shadow-sm backdrop-blur sm:h-[calc(100vh-210px)] sm:min-w-[300px]">
       <div className="flex items-center justify-between border-b border-[#e5ebf2] px-3 py-3">
         {isRenaming ? (
           <TextField
@@ -81,7 +81,7 @@ function BoardColumn({ column }: { column: Column }) {
         </div>
       </SortableContext>
       <form className="border-t border-[#e5ebf2] p-3" onSubmit={submitTask}>
-        <div className="flex gap-2">
+        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
           <TextField value={newTaskTitle} onChange={(event) => setNewTaskTitle(event.target.value)} placeholder="Add task" />
           <Button size="icon" type="submit">
             <Plus className="size-4" />
@@ -189,20 +189,20 @@ export function KanbanBoard({ setActivePage }: { setActivePage: (page: string) =
   return (
     <div className="flex flex-col gap-4">
       <div className="glass-panel rounded-lg px-4 py-3">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-col items-stretch justify-between gap-3 sm:flex-row sm:flex-wrap sm:items-center">
           <div className="min-w-0">
             <p className="text-xs font-bold text-[#667085]">Projects / {activeProject.title}</p>
-            <h1 className="mt-1 text-2xl font-black tracking-normal">{activeProject.title}</h1>
+            <h1 className="mt-1 text-xl font-black tracking-normal sm:text-2xl">{activeProject.title}</h1>
             <p className="text-sm text-[#667085]">{activeProject.description || "Plan, assign, review, and ship work from one board."}</p>
           </div>
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
             <select
               value={activeProject.id}
               onChange={(event) => {
                 setActiveProjectId(event.target.value);
                 setProjectView("Board");
               }}
-              className="h-10 min-w-[230px] rounded-md border border-[#d7dee8] bg-white px-3 text-sm font-semibold text-[#172033]"
+              className="h-10 w-full rounded-md border border-[#d7dee8] bg-white px-3 text-sm font-semibold text-[#172033] sm:w-auto sm:min-w-[230px]"
               aria-label="Select project board"
             >
               {projects.map((project) => (
@@ -223,11 +223,11 @@ export function KanbanBoard({ setActivePage }: { setActivePage: (page: string) =
             </Button>
           </div>
         </div>
-        <div className="mt-4 flex gap-6 border-t border-[#edf1f5] pt-3 text-sm font-bold text-[#667085]">
+        <div className="scrollbar-thin mt-4 flex gap-5 overflow-x-auto border-t border-[#edf1f5] pt-3 text-sm font-bold text-[#667085]">
           {boardTabs.map((tab) => (
             <button
               key={tab}
-              className={projectView === tab ? "border-b-2 border-[#0f766e] pb-2 text-[#0f766e]" : "pb-2 hover:text-[#172033]"}
+              className={projectView === tab ? "shrink-0 border-b-2 border-[#0f766e] pb-2 text-[#0f766e]" : "shrink-0 pb-2 hover:text-[#172033]"}
               type="button"
               onClick={() => setProjectView(tab)}
             >
@@ -247,23 +247,23 @@ export function KanbanBoard({ setActivePage }: { setActivePage: (page: string) =
 
       {projectView === "Board" ? (
         <>
-          <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-col items-stretch justify-between gap-3 sm:flex-row sm:flex-wrap sm:items-center">
             <div>
               <h2 className="text-lg font-black tracking-normal">Kanban board</h2>
               <p className="text-sm text-[#667085]">Drag tasks between columns and open any card for full details.</p>
             </div>
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
               <select
                 value={priorityFilter}
                 onChange={(event) => setPriorityFilter(event.target.value as typeof priorityFilter)}
-                className="h-10 rounded-md border border-[#d7dee8] bg-white px-3 text-sm font-semibold"
+                className="h-10 w-full rounded-md border border-[#d7dee8] bg-white px-3 text-sm font-semibold sm:w-auto"
               >
                 {["All", "Low", "Medium", "High", "Urgent"].map((priority) => (
                   <option key={priority}>{priority}</option>
                 ))}
               </select>
               <form
-                className="flex gap-2"
+                className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row"
                 onSubmit={(event) => {
                   event.preventDefault();
                   if (!columnTitle.trim()) return;
@@ -280,7 +280,7 @@ export function KanbanBoard({ setActivePage }: { setActivePage: (page: string) =
             </div>
           </div>
           <DndContext sensors={sensors} onDragEnd={onDragEnd}>
-            <div className="scrollbar-thin flex gap-4 overflow-x-auto pb-3">
+            <div className="scrollbar-thin -mx-3 flex snap-x gap-3 overflow-x-auto px-3 pb-3 sm:mx-0 sm:gap-4 sm:px-0">
               {boardColumns.map((column) => (
                 <BoardColumn key={column.id} column={column} />
               ))}
@@ -290,7 +290,7 @@ export function KanbanBoard({ setActivePage }: { setActivePage: (page: string) =
       ) : null}
 
       {projectView === "List" ? (
-        <section className="soft-panel overflow-hidden rounded-lg">
+        <section className="soft-panel overflow-x-auto rounded-lg">
           <table className="w-full min-w-[860px] border-collapse text-left">
             <thead className="bg-[#f8fafc] text-xs uppercase tracking-[0.08em] text-[#667085]">
               <tr>
@@ -318,7 +318,7 @@ export function KanbanBoard({ setActivePage }: { setActivePage: (page: string) =
                     <td className="px-4 py-4"><Badge tone={task.priority === "Urgent" ? "red" : task.priority === "High" ? "amber" : "default"}>{task.priority}</Badge></td>
                     <td className="px-4 py-4 text-sm">{formatShortDate(task.dueDate)}</td>
                     <td className="px-4 py-4">
-                      <div className="flex gap-2">
+                      <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
                         <Button variant="outline" size="sm" onClick={() => setActiveTaskId(task.id)}>Open</Button>
                         <Button variant="danger" size="sm" onClick={() => deleteTask(task.id)}><Trash2 className="size-4" />Delete</Button>
                       </div>
@@ -469,7 +469,7 @@ export function KanbanBoard({ setActivePage }: { setActivePage: (page: string) =
               <select
                 value={projectDraft.status}
                 onChange={(event) => setProjectDraft((current) => ({ ...current, status: event.target.value as typeof activeProject.status }))}
-                className="h-10 rounded-md border border-[#d7dee8] bg-white px-3 text-sm font-semibold"
+                className="h-10 w-full rounded-md border border-[#d7dee8] bg-white px-3 text-sm font-semibold sm:w-auto"
               >
                 {["Active", "Completed", "Archived"].map((status) => <option key={status}>{status}</option>)}
               </select>

@@ -30,7 +30,7 @@ export function Dashboard() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-3xl font-black tracking-normal">Dashboard</h1>
+        <h1 className="text-2xl font-black sm:text-3xl tracking-normal">Dashboard</h1>
         <p className="text-sm text-[#667085]">Projects, deadlines, workload, and recent team activity.</p>
       </div>
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
@@ -62,7 +62,7 @@ export function Dashboard() {
             </ResponsiveContainer>
           </div>
           <p className="mt-2 text-xs text-[#667085]">The chart uses the exact same numbers as the table: Assigned, Open, Done, and Overdue.</p>
-          <div className="mt-4 overflow-hidden rounded-lg border border-[#edf1f5]">
+          <div className="mt-4 overflow-x-auto rounded-lg border border-[#edf1f5]">
             <table className="w-full min-w-[640px] text-left text-sm">
               <thead className="bg-[#f8fafc] text-xs uppercase tracking-[0.08em] text-[#667085]">
                 <tr>

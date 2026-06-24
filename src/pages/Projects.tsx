@@ -13,11 +13,11 @@ export function Projects({ setActivePage }: { setActivePage: (page: string) => v
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-black tracking-normal">Projects</h1>
+          <h1 className="text-2xl font-black sm:text-3xl tracking-normal">Projects</h1>
           <p className="text-sm text-[#667085]">Create, assign, archive, and track workspace initiatives.</p>
         </div>
         <form
-          className="flex gap-2"
+          className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row"
           onSubmit={(event) => {
             event.preventDefault();
             if (!title.trim()) return;
@@ -25,11 +25,11 @@ export function Projects({ setActivePage }: { setActivePage: (page: string) => v
             setTitle("");
           }}
         >
-          <TextField value={title} onChange={(event) => setTitle(event.target.value)} placeholder="New project title" />
-          <Button type="submit"><Plus className="size-4" />Project</Button>
+          <TextField className="w-full sm:w-64" value={title} onChange={(event) => setTitle(event.target.value)} placeholder="New project title" />
+          <Button className="w-full sm:w-auto" type="submit"><Plus className="size-4" />Project</Button>
         </form>
       </div>
-      <div className="soft-panel overflow-hidden rounded-lg">
+      <div className="soft-panel overflow-x-auto rounded-lg">
         <table className="w-full min-w-[760px] border-collapse text-left">
           <thead className="bg-[#f8fafc] text-xs uppercase tracking-[0.08em] text-[#667085]">
             <tr>

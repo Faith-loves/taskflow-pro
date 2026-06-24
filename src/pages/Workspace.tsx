@@ -10,7 +10,7 @@ export function Workspace() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-3xl font-black tracking-normal">Workspace</h1>
+        <h1 className="text-2xl font-black sm:text-3xl tracking-normal">Workspace</h1>
         <p className="text-sm text-[#667085]">Manage workspace identity, projects, and members.</p>
       </div>
       <section className="soft-panel rounded-lg p-5">
@@ -23,9 +23,9 @@ export function Workspace() {
             <p className="text-sm text-[#667085]">{members.length} members · {projects.length} projects</p>
           </div>
         </div>
-        <div className="flex max-w-xl gap-2">
+        <div className="flex max-w-xl flex-col gap-2 sm:flex-row">
           <TextField value={name} onChange={(event) => setName(event.target.value)} />
-          <Button onClick={() => updateWorkspaceName(name)}>Save</Button>
+          <Button className="w-full sm:w-auto" onClick={() => updateWorkspaceName(name)}>Save</Button>
         </div>
       </section>
       <section className="grid gap-4 md:grid-cols-3">
