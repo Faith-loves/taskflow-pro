@@ -28,35 +28,40 @@ export function AuthPage({ onAuthenticated }: { onAuthenticated: () => void }) {
       setMessage("Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to .env.local before using TaskFlow Pro.");
       return;
     }
-    if (mode === "signup") {
-      const { error } = await supabase.auth.signUp({
-        email: values.email,
-        password: values.password,
-        options: {
-          data: { full_name: values.name },
-          emailRedirectTo: window.location.origin,
-        },
-      });
-      setMessage(error?.message ?? "Check your inbox to verify your email.");
-      return;
+
+    try {
+      if (mode === "signup") {
+        const { error } = await supabase.auth.signUp({
+          email: values.email,
+          password: values.password,
+          options: {
+            data: { full_name: values.name },
+            emailRedirectTo: window.location.origin,
+          },
+        });
+        setMessage(error?.message ?? "Check your inbox to verify your email.");
+        return;
+      }
+      if (mode === "verify") {
+        const { error } = await supabase.auth.resend({
+          type: "signup",
+          email: values.email,
+          options: { emailRedirectTo: window.location.origin },
+        });
+        setMessage(error?.message ?? "Verification email sent again. Check inbox and spam.");
+        return;
+      }
+      if (mode === "reset") {
+        const { error } = await supabase.auth.resetPasswordForEmail(values.email, { redirectTo: window.location.origin });
+        setMessage(error?.message ?? "Password reset email sent.");
+        return;
+      }
+      const { error } = await supabase.auth.signInWithPassword({ email: values.email, password: values.password });
+      setMessage(error?.message ?? "Logged in successfully.");
+      if (!error) onAuthenticated();
+    } catch {
+      setMessage("Could not reach Supabase. Check the project URL, project status, and your network connection.");
     }
-    if (mode === "verify") {
-      const { error } = await supabase.auth.resend({
-        type: "signup",
-        email: values.email,
-        options: { emailRedirectTo: window.location.origin },
-      });
-      setMessage(error?.message ?? "Verification email sent again. Check inbox and spam.");
-      return;
-    }
-    if (mode === "reset") {
-      const { error } = await supabase.auth.resetPasswordForEmail(values.email, { redirectTo: window.location.origin });
-      setMessage(error?.message ?? "Password reset email sent.");
-      return;
-    }
-    const { error } = await supabase.auth.signInWithPassword({ email: values.email, password: values.password });
-    setMessage(error?.message ?? "Logged in successfully.");
-    if (!error) onAuthenticated();
   }
 
   return (
