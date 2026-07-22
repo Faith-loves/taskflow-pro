@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { Session } from "@supabase/supabase-js";
-import { AppProvider } from "@/lib/app-store";
+import { AppProvider, DemoAppProvider } from "@/lib/app-store";
 import {
   checkSupabaseReachable,
   clearSupabaseSessionCache,
@@ -67,7 +67,7 @@ function SupabaseUnavailable({ onRetry }: { onRetry: () => void }) {
 
 export default function App() {
   const params = new URLSearchParams(window.location.search);
-  const [stage, setStage] = useState<"landing" | "auth" | "app">("landing");
+  const [stage, setStage] = useState<"landing" | "auth" | "app" | "demo">("landing");
   const [activePage, setActivePage] = useState(params.get("page") ?? "dashboard");
   const [session, setSession] = useState<Session | null>(null);
   const [checkingSession, setCheckingSession] = useState(true);
@@ -76,6 +76,11 @@ export default function App() {
 
   useEffect(() => {
     let cancelled = false;
+    if (stage === "landing" || stage === "demo") {
+      setCheckingSession(false);
+      setConnectionFailed(false);
+      return undefined;
+    }
     if (!supabase) {
       setCheckingSession(false);
       return undefined;
@@ -122,7 +127,7 @@ export default function App() {
       cancelled = true;
       data.subscription.unsubscribe();
     };
-  }, [sessionCheckKey]);
+  }, [sessionCheckKey, stage]);
 
   if (!isSupabaseConfigured) {
     return (
@@ -147,11 +152,32 @@ export default function App() {
   }
 
   if (stage === "landing") {
-    return <Landing onStart={() => setStage("auth")} />;
+    return (
+      <Landing
+        onStart={() => setStage("auth")}
+        onDemo={() => {
+          setActivePage("dashboard");
+          setStage("demo");
+        }}
+      />
+    );
   }
 
   if (stage === "auth") {
     return <AuthPage onAuthenticated={() => setStage("app")} />;
+  }
+
+  if (stage === "demo") {
+    return (
+      <QueryClientProvider client={queryClient}>
+        <DemoAppProvider>
+          <AppShell activePage={activePage} setActivePage={setActivePage}>
+            <Page activePage={activePage} setActivePage={setActivePage} />
+          </AppShell>
+          <TaskDetailDrawer />
+        </DemoAppProvider>
+      </QueryClientProvider>
+    );
   }
 
   if (!session) {

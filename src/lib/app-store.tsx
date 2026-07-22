@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import type { AppState, Column, Member, Priority, Project, Task } from "@/data/types";
 import { supabase } from "./supabase";
+import { initialState } from "@/data/seed";
 import { daysFromNow } from "./utils";
 
 type AppStore = AppState & {
@@ -921,6 +922,259 @@ export function AppProvider({ children, userId, userEmail }: { children: ReactNo
           }),
         ),
       ).then(() => refresh());
+    },
+  };
+
+  return <AppContext.Provider value={store}>{children}</AppContext.Provider>;
+}
+
+
+const cloneInitialState = () => structuredClone(initialState) as AppState;
+const demoId = (prefix: string) => `${prefix}-${crypto.randomUUID?.() ?? Date.now().toString(36)}`;
+
+export function DemoAppProvider({ children }: { children: ReactNode }) {
+  const [state, setState] = useState<AppState>(() => cloneInitialState());
+  const [activeProjectId, setActiveProjectId] = useState<string>(initialState.projects[0]?.id ?? "");
+  const [activeTaskId, setActiveTaskId] = useState<string>();
+  const [search, setSearch] = useState("");
+  const [priorityFilter, setPriorityFilter] = useState<Priority | "All">("All");
+
+  const activeProject = state.projects.find((project) => project.id === activeProjectId) ?? state.projects[0];
+  const activeTask = state.tasks.find((task) => task.id === activeTaskId);
+  const store: AppStore = {
+    ...state,
+    activeProject,
+    activeTask,
+    activeTaskId,
+    setActiveProjectId,
+    search,
+    setSearch,
+    priorityFilter,
+    setPriorityFilter,
+    setActiveTaskId,
+    refresh: async () => undefined,
+    moveTask(taskId, columnId, position = 0) {
+      let activityMessage = "updated task position.";
+      setState((current) => {
+        const task = current.tasks.find((item) => item.id === taskId);
+        const fromColumn = current.columns.find((column) => column.id === task?.columnId);
+        const toColumn = current.columns.find((column) => column.id === columnId);
+        if (task && fromColumn && toColumn && fromColumn.id !== toColumn.id) activityMessage = `moved this task from ${fromColumn.title} to ${toColumn.title}.`;
+        return {
+          ...current,
+          tasks: current.tasks.map((item) =>
+            item.id === taskId
+              ? {
+                  ...item,
+                  columnId,
+                  position,
+                  activity: [
+                    { id: demoId("activity"), taskId, actorId: current.currentUserId, message: activityMessage, createdAt: new Date().toISOString() },
+                    ...item.activity,
+                  ],
+                }
+              : item,
+          ),
+        };
+      });
+    },
+    createTask(columnId, title) {
+      const taskId = demoId("task");
+      setState((current) => ({
+        ...current,
+        tasks: [
+          ...current.tasks,
+          {
+            id: taskId,
+            projectId: activeProject.id,
+            columnId,
+            title,
+            description: "Created in recruiter demo mode.",
+            assigneeId: current.currentUserId,
+            priority: "Medium",
+            dueDate: daysFromNow(7),
+            labels: ["Demo"],
+            attachments: [],
+            comments: [],
+            subtasks: [],
+            activity: [{ id: demoId("activity"), taskId, actorId: current.currentUserId, message: "created this task.", createdAt: new Date().toISOString() }],
+            position: current.tasks.filter((task) => task.columnId === columnId).length,
+          },
+        ],
+      }));
+    },
+    updateTask(taskId, patch) {
+      setState((current) => ({
+        ...current,
+        tasks: current.tasks.map((task) =>
+          task.id === taskId
+            ? {
+                ...task,
+                ...patch,
+                activity: [
+                  { id: demoId("activity"), taskId, actorId: current.currentUserId, message: "updated task details.", createdAt: new Date().toISOString() },
+                  ...task.activity,
+                ],
+              }
+            : task,
+        ),
+      }));
+    },
+    addComment(taskId, body) {
+      setState((current) => ({
+        ...current,
+        tasks: current.tasks.map((task) =>
+          task.id === taskId
+            ? {
+                ...task,
+                comments: [...task.comments, { id: demoId("comment"), taskId, authorId: current.currentUserId, body, createdAt: new Date().toISOString() }],
+                activity: [
+                  { id: demoId("activity"), taskId, actorId: current.currentUserId, message: "added a comment.", createdAt: new Date().toISOString() },
+                  ...task.activity,
+                ],
+              }
+            : task,
+        ),
+      }));
+    },
+    deleteComment(taskId, commentId) {
+      setState((current) => ({
+        ...current,
+        tasks: current.tasks.map((task) => (task.id === taskId ? { ...task, comments: task.comments.filter((comment) => comment.id !== commentId) } : task)),
+      }));
+    },
+    deleteTask(taskId) {
+      if (!window.confirm("Delete this demo task?")) return;
+      setState((current) => ({ ...current, tasks: current.tasks.filter((task) => task.id !== taskId) }));
+      if (activeTaskId === taskId) setActiveTaskId(undefined);
+    },
+    createColumn(title) {
+      setState((current) => ({
+        ...current,
+        columns: [...current.columns, { id: demoId("column"), projectId: activeProject.id, title, position: current.columns.filter((column) => column.projectId === activeProject.id).length }],
+      }));
+    },
+    renameColumn(columnId, title) {
+      setState((current) => ({ ...current, columns: current.columns.map((column) => (column.id === columnId ? { ...column, title } : column)) }));
+    },
+    deleteColumn(columnId) {
+      const fallbackColumn = state.columns.find((column) => column.projectId === activeProject.id && column.id !== columnId);
+      if (!fallbackColumn) return;
+      setState((current) => ({
+        ...current,
+        columns: current.columns.filter((column) => column.id !== columnId),
+        tasks: current.tasks.map((task) => (task.columnId === columnId ? { ...task, columnId: fallbackColumn.id } : task)),
+      }));
+    },
+    inviteMember(email, role) {
+      const id = demoId("member");
+      setState((current) => ({
+        ...current,
+        members: [...current.members, { id, name: email.split("@")[0].replace(/[._-]/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase()), email, role, title: "Invited reviewer" }],
+      }));
+    },
+    updateMemberRole(memberId, role) {
+      setState((current) => ({ ...current, members: current.members.map((member) => (member.id === memberId ? { ...member, role } : member)) }));
+    },
+    createProject(title) {
+      const projectId = demoId("project");
+      const columnTitles = ["Backlog", "To Do", "In Progress", "In Review", "Done"];
+      setState((current) => ({
+        ...current,
+        projects: [
+          ...current.projects,
+          { id: projectId, workspaceId: current.workspace.id, title, description: "Editable demo project.", startDate: new Date().toISOString(), dueDate: daysFromNow(21), status: "Active", memberIds: [current.currentUserId] },
+        ],
+        columns: [...current.columns, ...columnTitles.map((columnTitle, position) => ({ id: demoId("column"), projectId, title: columnTitle, position }))],
+      }));
+      setActiveProjectId(projectId);
+    },
+    updateProject(projectId, patch) {
+      setState((current) => ({ ...current, projects: current.projects.map((project) => (project.id === projectId ? { ...project, ...patch } : project)) }));
+    },
+    archiveProject(projectId) {
+      setState((current) => ({ ...current, projects: current.projects.map((project) => (project.id === projectId ? { ...project, status: "Archived" } : project)) }));
+    },
+    deleteProject(projectId) {
+      if (state.projects.length <= 1) return;
+      setState((current) => ({
+        ...current,
+        projects: current.projects.filter((project) => project.id !== projectId),
+        columns: current.columns.filter((column) => column.projectId !== projectId),
+        tasks: current.tasks.filter((task) => task.projectId !== projectId),
+      }));
+      if (activeProjectId === projectId) setActiveProjectId(state.projects.find((project) => project.id !== projectId)?.id ?? "");
+    },
+    updateWorkspaceName(name) {
+      setState((current) => ({ ...current, workspace: { ...current.workspace, name } }));
+    },
+    deleteWorkspace() {
+      if (!window.confirm("Reset the demo workspace?")) return;
+      const fresh = cloneInitialState();
+      setState(fresh);
+      setActiveProjectId(fresh.projects[0]?.id ?? "");
+      setActiveTaskId(undefined);
+    },
+    uploadWorkspaceLogo(file) {
+      const logo = URL.createObjectURL(file);
+      setState((current) => ({ ...current, workspace: { ...current.workspace, logo } }));
+    },
+    uploadProfilePicture(file) {
+      const avatarUrl = URL.createObjectURL(file);
+      setState((current) => ({ ...current, members: current.members.map((member) => (member.id === current.currentUserId ? { ...member, avatarUrl } : member)) }));
+    },
+    uploadTaskAttachment(taskId, file) {
+      const url = URL.createObjectURL(file);
+      setState((current) => ({
+        ...current,
+        tasks: current.tasks.map((task) =>
+          task.id === taskId
+            ? {
+                ...task,
+                attachments: [...task.attachments, { id: demoId("attachment"), taskId, name: file.name, type: file.type || "File", url, size: `${Math.ceil(file.size / 1024)} KB` }],
+              }
+            : task,
+        ),
+      }));
+    },
+    deleteTaskAttachment(attachmentId) {
+      setState((current) => ({
+        ...current,
+        tasks: current.tasks.map((task) => ({ ...task, attachments: task.attachments.filter((attachment) => attachment.id !== attachmentId) })),
+      }));
+    },
+    toggleSubtask(taskId, subtaskId, completed) {
+      setState((current) => ({
+        ...current,
+        tasks: current.tasks.map((task) =>
+          task.id === taskId ? { ...task, subtasks: task.subtasks.map((subtask) => (subtask.id === subtaskId ? { ...subtask, completed } : subtask)) } : task,
+        ),
+      }));
+    },
+    addSubtask(taskId, title) {
+      setState((current) => ({
+        ...current,
+        tasks: current.tasks.map((task) => (task.id === taskId ? { ...task, subtasks: [...task.subtasks, { id: demoId("subtask"), title, completed: false }] } : task)),
+      }));
+    },
+    markNotificationsRead() {
+      setState((current) => ({ ...current, notifications: current.notifications.map((notification) => ({ ...notification, read: true })) }));
+    },
+    deleteNotification(notificationId) {
+      setState((current) => ({ ...current, notifications: current.notifications.filter((notification) => notification.id !== notificationId) }));
+    },
+    clearNotifications() {
+      setState((current) => ({ ...current, notifications: [] }));
+    },
+    generateAiTasks(idea) {
+      const firstColumn = state.columns.find((column) => column.projectId === activeProject.id)?.id ?? state.columns[0].id;
+      ["Define scope", "Design core flow", "Build primary screens", "Connect data layer", "QA launch checklist"].forEach((title, index) => {
+        store.createTask(firstColumn, `${title}: ${idea}`);
+        setState((current) => ({
+          ...current,
+          tasks: current.tasks.map((task) => (task.title === `${title}: ${idea}` ? { ...task, priority: index === 0 ? "High" : "Medium", labels: ["AI", "Demo"] } : task)),
+        }));
+      });
     },
   };
 
